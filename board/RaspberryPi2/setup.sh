@@ -1,9 +1,16 @@
-KERNCONF=RPI2
+KERNCONF=GENERIC
 UBLDR_LOADADDR=0x2000000
 RPI_UBOOT="u-boot-rpi2"
 RPI_UBOOT_BIN="u-boot.bin"
-IMAGE_SIZE=$((1000 * 1000 * 1000)) # 1 GB default
-TARGET_ARCH=armv6
+RPI_FIRMWARE_PORT="rpi-firmware"
+RPI_FIRMWARE_BIN="bootcode.bin"
+RPI_FIRMWARE_PATH="${SHARE_PATH}/${RPI_FIRMWARE_PORT}"
+RPI_FIRMWARE_FILES="bootcode.bin bcm2709-rpi-2-b.dtb config.txt fixup.dat \
+    fixup_cd.dat fixup_db.dat fixup_x.dat overlays start.elf start_cd.elf \
+    start_db.elf start_x.elf"
+IMAGE_SIZE=$((3 * 1000 * 1000 * 1000)) # 1 GB too small - go with 3 GB default
+TARGET_ARCH=armv7
+TARGET_CPUTYPE=cortex-a7
 
 UBOOT_PATH="/usr/local/share/u-boot/${RPI_UBOOT}"
 
@@ -11,6 +18,11 @@ raspberry_pi_check_uboot ( ) {
     uboot_port_test ${RPI_UBOOT} ${RPI_UBOOT_BIN}
 }
 strategy_add $PHASE_CHECK raspberry_pi_check_uboot
+
+rpi_check_firmware ( ) {
+    firmware_port_test ${RPI_FIRMWARE_PORT} ${RPI_FIRMWARE_BIN}
+}
+strategy_add $PHASE_CHECK rpi_check_firmware
 
 # Build ubldr.
 strategy_add $PHASE_BUILD_OTHER freebsd_ubldr_build UBLDR_LOADADDR=${UBLDR_LOADADDR}
@@ -26,17 +38,12 @@ strategy_add $PHASE_PARTITION_LWW raspberry_pi_partition_image
 
 raspberry_pi_populate_boot_partition ( ) {
     # Copy RaspberryPi 2 boot files to FAT partition
-    cp ${UBOOT_PATH}/LICENCE.broadcom .
     cp ${UBOOT_PATH}/README .
-    cp ${UBOOT_PATH}/bootcode.bin .
-    cp ${UBOOT_PATH}/config.txt .
-    cp ${UBOOT_PATH}/fixup.dat .
-    cp ${UBOOT_PATH}/fixup_cd.dat .
-    cp ${UBOOT_PATH}/fixup_x.dat .
-    cp ${UBOOT_PATH}/start.elf .
-    cp ${UBOOT_PATH}/start_cd.elf .
-    cp ${UBOOT_PATH}/start_x.elf .
     cp ${UBOOT_PATH}/u-boot.bin .
+    cp ${UBOOT_PATH}/boot.scr .
+    for i in ${RPI_FIRMWARE_FILES}; do
+        cp -R ${RPI_FIRMWARE_PATH}/${i} .
+    done
 
     # RPi firmware loads and modify the DTB before pass it to kernel.
     freebsd_install_fdt rpi2.dts rpi2.dtb

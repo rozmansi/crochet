@@ -350,7 +350,7 @@ freebsd_ubldr_build ( ) {
     rm -rf ${UBLDR_DIR}/boot
     mkdir -p ${UBLDR_DIR}/boot/defaults
 
-    cd sys/boot
+    cd stand
     eval $buildenv make "$@" -m $ubldr_makefiles obj > ${LOGFILE} 2>&1
     eval $buildenv make "$@" -m $ubldr_makefiles clean >> ${LOGFILE} 2>&1
     eval $buildenv make "$@" -m $ubldr_makefiles depend >> ${LOGFILE} 2>&1
@@ -424,7 +424,7 @@ freebsd_loader_efi_build ( ) {
     rm -rf ${EFI_DIR}/boot
     mkdir -p ${EFI_DIR}/boot/defaults
 
-    cd sys/boot
+    cd stand
     eval $buildenv make "$@" -m $sharemk obj > ${LOGFILE} 2>&1
     eval $buildenv make "$@" -m $sharemk clean >> ${LOGFILE} 2>&1
     eval $buildenv make "$@" -m $sharemk depend >> ${LOGFILE} 2>&1
@@ -488,7 +488,7 @@ _freebsd_get_machine ( ) {
     echo ${MACHINE}
 }
 
-# $1: name of dts or dtb file, relative to sys/boot/fdt/dts
+# $1: name of dts or dtb file, relative to sys/dts
 # $2: destination dts or dtb file or dir, relative to cwd
 #
 # If $1 and $2 have different extensions (".dts" vs. ".dtb"),
@@ -499,7 +499,7 @@ _freebsd_get_machine ( ) {
 freebsd_install_fdt ( ) (
     buildenv=`cd $FREEBSD_SRC; make TARGET_ARCH=$TARGET_ARCH buildenvvars`
     buildenv_machine=`eval $buildenv _freebsd_get_machine`;
-    _FDTDIR=$FREEBSD_SRC/sys/boot/fdt/dts
+    _FDTDIR=$FREEBSD_SRC/sys/dts
     if [ -f ${_FDTDIR}/${buildenv_machine}/${1} ]; then
         _FDTDIR=${_FDTDIR}/${buildenv_machine}
     fi
