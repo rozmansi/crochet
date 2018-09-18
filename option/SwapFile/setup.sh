@@ -67,7 +67,7 @@ option_swapfile_install ( ) {
 	_RCDIR=usr/local/etc/rc.d
 	cp ${OPTIONDIR}/swapfile_create ${_RCDIR}/swapfile_create
 	chmod 555 ${_RCDIR}/swapfile_create
-	cat >>etc/rc.conf <<EOF
+	cat >etc/rc.conf.d/swapfile_create <<EOF
 # On first boot, create a swap file
 swapfile_create_enable="YES"
 swapfile_create_file="/${_SWAPFILE_FILE}"

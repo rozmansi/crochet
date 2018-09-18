@@ -7,7 +7,7 @@
 #
 
 option_growfs_install ( ) {
-    cat >>etc/rc.conf <<EOF
+    cat >etc/rc.conf.d/growfs <<EOF
 # On first boot, enlarge the root filesystem to fill the SD card
 growfs_enable="YES"
 EOF

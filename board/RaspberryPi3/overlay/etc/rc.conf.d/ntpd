@@ -1,0 +1,3 @@
+# Nice if you have a network, else annoying.
+#ntpd_enable="YES"
+ntpd_sync_on_start="YES"

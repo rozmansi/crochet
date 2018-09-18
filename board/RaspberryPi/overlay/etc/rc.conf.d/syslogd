@@ -1,0 +1,3 @@
+# Turn off a lot of standard stuff
+# for more free memory.
+syslogd_enable="NO"

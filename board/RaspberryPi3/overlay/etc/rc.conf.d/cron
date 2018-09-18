@@ -1,0 +1,2 @@
+# Uncomment to disable common services (more memory)
+#cron_enable="NO"
